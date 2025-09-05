@@ -3,53 +3,182 @@ import { spawn } from 'child_process';
 
 console.log('🎵 Spotify MCP Analytics CLI\n');
 
+// Commands registry for easy maintenance and help generation
+const COMMANDS = {
+  // Authentication Commands
+  status: {
+    category: 'Authentication',
+    description: 'Check authentication status',
+    usage: 'node spotify-cli.js status',
+    example: 'node spotify-cli.js status'
+  },
+  generate: {
+    category: 'Authentication',
+    description: 'Generate OAuth authorization URL',
+    usage: 'node spotify-cli.js generate',
+    example: 'node spotify-cli.js generate'
+  },
+  auth: {
+    category: 'Authentication',
+    description: 'Complete OAuth authentication with code',
+    usage: 'node spotify-cli.js auth "CODE" "CODE_VERIFIER"',
+    example: 'node spotify-cli.js auth "YOUR_CODE" "YOUR_CODE_VERIFIER"'
+  },
+  login: {
+    category: 'Authentication',
+    description: 'Simple CLI authentication (no browser needed)',
+    usage: 'node spotify-cli.js login',
+    example: 'node spotify-cli.js login'
+  },
+  
+  // User & Profile Commands
+  profile: {
+    category: 'User',
+    description: 'Get current user profile information',
+    usage: 'node spotify-cli.js profile',
+    example: 'node spotify-cli.js profile'
+  },
+  tools: {
+    category: 'System',
+    description: 'List all available MCP tools',
+    usage: 'node spotify-cli.js tools',
+    example: 'node spotify-cli.js tools'
+  },
+  
+  // Search Commands
+  search: {
+    category: 'Search',
+    description: 'Search for tracks by name and artist',
+    usage: 'node spotify-cli.js search "TRACK_NAME" "ARTIST_NAME"',
+    example: 'node spotify-cli.js search "Bohemian Rhapsody" "Queen"'
+  },
+  albums: {
+    category: 'Search',
+    description: 'Search for albums by artist name',
+    usage: 'node spotify-cli.js albums "ARTIST_NAME"',
+    example: 'node spotify-cli.js albums "Taylor Swift"'
+  },
+  playlists: {
+    category: 'Search',
+    description: 'Search playlists containing a specific track',
+    usage: 'node spotify-cli.js playlists "TRACK_NAME" "ARTIST_NAME"',
+    example: 'node spotify-cli.js playlists "Shape of You" "Ed Sheeran"'
+  },
+  
+  // Analytics Commands
+  popularity: {
+    category: 'Analytics',
+    description: 'Get popularity score for a track',
+    usage: 'node spotify-cli.js popularity "TRACK_ID"',
+    example: 'node spotify-cli.js popularity "4iV5W9uYEdYUVa79Axb7Rh"'
+  },
+  'album-popularity': {
+    category: 'Analytics',
+    description: 'Get popularity score for an album',
+    usage: 'node spotify-cli.js album-popularity "ALBUM_ID"',
+    example: 'node spotify-cli.js album-popularity "1DFixLWuPkv3KT3TnV35m3"'
+  },
+  'artist-popularity': {
+    category: 'Analytics',
+    description: 'Get popularity score for an artist',
+    usage: 'node spotify-cli.js artist-popularity "ARTIST_ID"',
+    example: 'node spotify-cli.js artist-popularity "1Xyo4u8uXC1ZmMpatF05PJ"'
+  },
+  trends: {
+    category: 'Analytics',
+    description: 'Analyze artist popularity trends and metrics',
+    usage: 'node spotify-cli.js trends "ARTIST_ID"',
+    example: 'node spotify-cli.js trends "06HL4z0CvFAxyc27GXpf02"'
+  },
+  'analyze-single': {
+    category: 'Analytics',
+    description: 'Comprehensive analysis of a single track',
+    usage: 'node spotify-cli.js analyze-single "TRACK_ID"',
+    example: 'node spotify-cli.js analyze-single "4iV5W9uYEdYUVa79Axb7Rh"'
+  },
+  'analyze-genre': {
+    category: 'Analytics',
+    description: 'Analyze genre information for an artist',
+    usage: 'node spotify-cli.js analyze-genre "ARTIST_ID" [options]',
+    example: 'node spotify-cli.js analyze-genre "06HL4z0CvFAxyc27GXpf02" "playlists,related"'
+  },
+  'explore-metrics': {
+    category: 'Analytics',
+    description: 'Explore comprehensive artist metrics and insights',
+    usage: 'node spotify-cli.js explore-metrics "ARTIST_ID"',
+    example: 'node spotify-cli.js explore-metrics "1Xyo4u8uXC1ZmMpatF05PJ"'
+  },
+  
+  // Utility Commands
+  'album-tracks': {
+    category: 'Utility',
+    description: 'Get all tracks from an album',
+    usage: 'node spotify-cli.js album-tracks "ALBUM_ID"',
+    example: 'node spotify-cli.js album-tracks "1DFixLWuPkv3KT3TnV35m3"'
+  },
+  
+  // Help Command
+  help: {
+    category: 'System',
+    description: 'Show this help message',
+    usage: 'node spotify-cli.js help [category]',
+    example: 'node spotify-cli.js help Analytics'
+  }
+};
+
 // Check command line arguments
 const command = process.argv[2];
 const arg1 = process.argv[3];
 const arg2 = process.argv[4];
 
-if (!command) {
-  console.log('📋 Usage Examples:');
-  console.log('');
-  console.log('1. Check auth status:');
-  console.log('   node spotify-cli.js status');
-  console.log('');
-  console.log('2. Generate auth URL:');
-  console.log('   node spotify-cli.js generate');
-  console.log('');
-  console.log('3. Authenticate (after getting code from browser):');
-  console.log('   node spotify-cli.js auth "YOUR_CODE" "YOUR_CODE_VERIFIER"');
-  console.log('');
-  console.log('4. Get user profile:');
-  console.log('   node spotify-cli.js profile');
-  console.log('');
-  console.log('5. List all tools:');
-  console.log('   node spotify-cli.js tools');
-  console.log('');
-  console.log('6. Get track popularity:');
-  console.log('   node spotify-cli.js popularity "TRACK_ID"');
-  console.log('');
-  console.log('7. Search playlists by track:');
-  console.log('   node spotify-cli.js playlists "TRACK_NAME" "ARTIST_NAME"');
-  console.log('');
-  console.log('8. Analyze artist trends:');
-  console.log('   node spotify-cli.js trends "ARTIST_ID"');
-  console.log('');
-  console.log('9. Search for tracks:');
-  console.log('   node spotify-cli.js search "TRACK_NAME" "ARTIST_NAME"');
-  console.log('');
-  console.log('10. Search artist albums:');
-  console.log('   node spotify-cli.js albums "ARTIST_NAME"');
-  console.log('');
-  console.log('11. Analyze single (comprehensive):');
-  console.log('   node spotify-cli.js analyze-single "TRACK_ID"');
-  console.log('');
-  console.log('12. Analyze genre:');
-  console.log('   node spotify-cli.js analyze-genre "ARTIST_ID"');
-  console.log('');
-  console.log('13. Simple CLI authentication (no browser needed):');
-  console.log('   node spotify-cli.js login');
+// Show help if no command or help command
+if (!command || command === 'help') {
+  showHelp(arg1);
   process.exit(0);
+}
+
+function showHelp(category = null) {
+  console.log('🎵 Spotify MCP Analytics CLI - Help\n');
+  
+  if (category) {
+    // Show commands for specific category
+    const categoryCommands = Object.entries(COMMANDS).filter(([_, cmd]) => 
+      cmd.category.toLowerCase() === category.toLowerCase()
+    );
+    
+    if (categoryCommands.length === 0) {
+      console.log(`❌ Unknown category: ${category}`);
+      console.log('\n📋 Available categories:');
+      const categories = [...new Set(Object.values(COMMANDS).map(cmd => cmd.category))];
+      categories.forEach(cat => console.log(`   ${cat}`));
+      return;
+    }
+    
+    console.log(`📋 ${category} Commands:\n`);
+    categoryCommands.forEach(([cmdName, cmd]) => {
+      console.log(`🔸 ${cmdName}`);
+      console.log(`   ${cmd.description}`);
+      console.log(`   Usage: ${cmd.usage}`);
+      console.log(`   Example: ${cmd.example}\n`);
+    });
+  } else {
+    // Show all commands grouped by category
+    const categories = [...new Set(Object.values(COMMANDS).map(cmd => cmd.category))];
+    
+    categories.forEach(cat => {
+      console.log(`📋 ${cat} Commands:`);
+      const categoryCommands = Object.entries(COMMANDS).filter(([_, cmd]) => cmd.category === cat);
+      categoryCommands.forEach(([cmdName, cmd]) => {
+        console.log(`   ${cmdName.padEnd(18)} - ${cmd.description}`);
+      });
+      console.log('');
+    });
+    
+    console.log('💡 Tips:');
+    console.log('   • Use "help [category]" for detailed command info (e.g., "help Analytics")');
+    console.log('   • Most commands require authentication first (use "login" or "generate" + "auth")');
+    console.log('   • Track/Artist/Album IDs can be found in Spotify URLs or by using search commands');
+  }
 }
 
 // Start MCP server
@@ -106,6 +235,14 @@ server.stderr.on('data', (data) => {
 });
 
 function sendCommand() {
+  // Validate command exists in registry
+  if (!COMMANDS[command]) {
+    console.log(`❌ Unknown command: ${command}`);
+    console.log('\n💡 Use "help" to see all available commands');
+    server.kill();
+    process.exit(1);
+  }
+  
   let request;
   
   switch (command) {
@@ -419,11 +556,6 @@ function sendCommand() {
         }
       };
       break;
-      
-    default:
-      console.log('❌ Unknown command:', command);
-      server.kill();
-      process.exit(1);
   }
   
   console.log(`📤 Calling: ${command}`);
