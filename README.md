@@ -75,7 +75,7 @@ For accessing user's private playlists and personal data:
 
 # Help
 help                              # Show all commands grouped by category
-help CATEGORY                    # Show detailed help for a given category
+help CATEGORY                     # Show detailed help for a given category
 
 # Authentication
 login                             # Simple CLI auth
@@ -104,8 +104,6 @@ explore-metrics "ARTIST_ID"       # Explore comprehensive artist metrics
 # Utility
 album-tracks "ALBUM_ID"           # Get album tracks with popularity
 ```
-
-💡 **Tip**: Use `node spotify-cli.js help` for detailed usage examples and descriptions of each command.
 
 ### Getting Spotify IDs
 
