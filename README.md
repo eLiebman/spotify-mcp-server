@@ -69,29 +69,43 @@ For accessing user's private playlists and personal data:
 - Separate storage for OAuth vs Client Credentials tokens
 
 ## Available CLI Commands
+
+### Quick Command Reference
 ```bash
+
+# Help
+help                              # Show all commands grouped by category
+help CATEGORY                    # Show detailed help for a given category
+
 # Authentication
 login                             # Simple CLI auth
 status                            # Check auth status
 generate                          # Generate OAuth URL
 auth "CODE" "VERIFIER"            # Complete OAuth
 
-# Basic API
+# User & System
 profile                           # Get user profile
-test                              # Test connection
-tools                             # List available tools
+tools                             # List available MCP tools
 
-# Analytics
+# Search
 search "TRACK_NAME" "ARTIST"      # Search for tracks
 albums "ARTIST_NAME"              # Find artist's albums
-album-tracks "ALBUM_ID"           # Get album tracks with popularity
+playlists "TRACK_NAME" "ARTIST"   # Find playlists containing track
+
+# Analytics
+popularity "TRACK_ID"             # Get track popularity
 album-popularity "ALBUM_ID"       # Get album popularity score
 artist-popularity "ARTIST_ID"     # Get artist popularity score
-analyze-single "TRACK_ID" [true]  # Comprehensive single analysis with images
-popularity "TRACK_ID"             # Get track popularity
-playlists "TRACK_NAME" "ARTIST"   # Find playlists
+analyze-single "TRACK_ID"         # Comprehensive single analysis
+analyze-genre "ARTIST_ID"         # Analyze artist genre information
 trends "ARTIST_ID"                # Analyze artist trends
+explore-metrics "ARTIST_ID"       # Explore comprehensive artist metrics
+
+# Utility
+album-tracks "ALBUM_ID"           # Get album tracks with popularity
 ```
+
+💡 **Tip**: Use `node spotify-cli.js help` for detailed usage examples and descriptions of each command.
 
 ### Getting Spotify IDs
 
